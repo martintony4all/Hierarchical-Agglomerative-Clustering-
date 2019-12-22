@@ -1,0 +1,251 @@
+
+# Note that the dataset was normalized and columns with categorical data deleted. This is the implementation for dataset_1.
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sklearn.cluster as cluster
+import time
+import cmath as math
+import sys
+
+sns.set()
+sns.set_context('poster')
+sns.set_color_codes()
+
+# retrieving csv file and printing its features
+data = pd.read_csv('C:/Users/MartinNwadiugwu/Documents/clustering_data.csv', encoding="ISO-8859-1")
+print("Input Data and Shape")
+print(data.shape)
+data.head()
+
+# importing scipy for displaying dendrogram
+
+import scipy.cluster.hierarchy as sch
+
+Z = sch.linkage(data, method='median')
+den = sch.dendrogram(Z)
+
+# plotting clustering dendrogram to identify clusters and differentiate the two datasets
+
+plt.title('Clustering_First_Dataset_Dendrogram')
+plt.xlabel('Clusters')
+plt.ylabel('Variables a,b,c,d,e,f,g,h,i,j');
+plt.show()
+
+# clustering the dataset and defining functions
+
+from sklearn.cluster import AgglomerativeClustering
+
+hc = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+y_hc = hc.fit_predict(data)
+import plotly
+import plotly.graph_objs as go
+
+
+def getTrace(x, y, z, c, label, s=2):
+    trace_points = go.Scatter3d(
+        x=x, y=y, z=z,
+        mode='markers',
+        marker=dict(size=s, line=dict(color='rgb(0, 0, 0)', width=0.5), color=c, opacity=1),
+        name=label
+    )
+    return trace_points;
+
+
+def success_ratio(cm):
+    total_success = 0;
+    total = 0
+    for i in range(0, len(cm)):
+        for j in range(0, len(cm[i])):
+            if i == j: total_success = total_success + cm[i, j]
+            total = total + cm[i, j]
+            return (100 * total_success) / total
+
+
+X = data.copy()
+X = data.iloc[:, [0, 1, 2]].values
+y_set = data.iloc[:, [3]].values
+
+
+def getClusterAssignments(X, den):
+    cluster_idxs = dict()
+    cluster_rows = dict()
+    colors_nums = dict()
+    col_num = 0
+    for c in np.unique(den['color_list']):
+        cluster_idxs[c] = []
+        colors_nums[c] = col_num
+        cluster_rows[col_num] = []
+        col_num = col_num + 1
+
+
+y_pred = getClusterAssignments(X, den)
+y_pred
+y_pred = np.array(y_hc)
+y_pred[y_hc == 0] = 1
+y_pred[y_hc == 1] = 2
+y_pred[y_hc == 2] = 3
+y_pred
+
+from sklearn.metrics import confusion_matrix
+
+cm = confusion_matrix(y_set, y_pred)
+print("success ratio : ", success_ratio(cm=cm), "%")
+from sklearn.cluster import AgglomerativeClustering
+
+hc = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+
+t1 = getTrace(X[y_hc == 0, 0], X[y_hc == 0, 1], X[y_hc == 0, 2], s=4, c='red', label='1')  #
+t2 = getTrace(X[y_hc == 1, 0], X[y_hc == 1, 1], X[y_hc == 1, 2], s=4, c='green', label='2')  #
+t3 = getTrace(X[y_hc == 2, 0], X[y_hc == 2, 1], X[y_hc == 2, 2], s=4, c='blue', label='3')  #
+x = X[:, 0]
+y = X[:, 1]
+z = X[:, 2]
+
+
+def showGraph(title, x_colname, x_range, y_colname, y_range, z_colname, z_range, traces):
+    layout = go.Layout(
+        title=title,
+        scene=dict(
+            xaxis=dict(title=x_colname, range=x_range),
+            yaxis=dict(title=y_colname, range=y_range),
+            zaxis=dict(title=z_colname, range=z_range)
+        )
+    )
+    fig = go.Figure(data=traces, layout=layout)
+    plotly.offline.plot(fig)
+
+
+# printing clusters in 3D using pyplot
+
+showGraph("Clustering results of the FIRST_DATASET IN 3D", "1ST_CLUSTER", [min(x), max(x)], "2ND_CLUSTER",
+          [min(y), max(y)], "3RD_CLUSTER", [min(z) - 1, max(z)], [t1, t2, t3])
+
+
+-------------------------------------------------------------------------------------------------------------
+
+# Implementing clusters for Dataset_2 is achieved by editing the filenames.
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import sklearn.cluster as cluster
+import time
+import cmath as math
+import sys
+
+sns.set()
+sns.set_context('poster')
+sns.set_color_codes()
+
+# retrieving csv file and printing its features
+data2 = pd.read_csv('C:/Users/MartinNwadiugwu/Documents/clustering_data2.csv', encoding="ISO-8859-1")
+print("Input Data and Shape")
+print(data2.shape)
+data2.head()
+
+# importing scipy for displaying dendrogram
+
+import scipy.cluster.hierarchy as sch
+
+Z = sch.linkage(data2, method='median')
+den = sch.dendrogram(Z)
+
+# plotting clustering dendrogram to identify clusters and differentiate the two datasets
+
+plt.title('Clustering_Second_Dataset_Dendrogram')
+plt.xlabel('Clusters')
+plt.ylabel('Variables a,b,c,d,e,f,g,h,i,j');
+plt.show()
+
+# clustering the dataset and defining functions
+
+from sklearn.cluster import AgglomerativeClustering
+
+hc = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+y_hc = hc.fit_predict(data2)
+import plotly
+import plotly.graph_objs as go
+
+
+def getTrace(x, y, z, c, label, s=2):
+    trace_points = go.Scatter3d(
+        x=x, y=y, z=z,
+        mode='markers',
+        marker=dict(size=s, line=dict(color='rgb(0, 0, 0)', width=0.5), color=c, opacity=1),
+        name=label
+    )
+    return trace_points;
+
+
+def success_ratio(cm):
+    total_success = 0;
+    total = 0
+    for i in range(0, len(cm)):
+        for j in range(0, len(cm[i])):
+            if i == j: total_success = total_success + cm[i, j]
+            total = total + cm[i, j]
+            return (100 * total_success) / total
+
+
+X = data2.copy()
+X = data2.iloc[:, [0, 1, 2]].values
+y_set = data2.iloc[:, [3]].values
+
+
+def getClusterAssignments(X, den):
+    cluster_idxs = dict()
+    cluster_rows = dict()
+    colors_nums = dict()
+    col_num = 0
+    for c in np.unique(den['color_list']):
+        cluster_idxs[c] = []
+        colors_nums[c] = col_num
+        cluster_rows[col_num] = []
+        col_num = col_num + 1
+
+
+y_pred = getClusterAssignments(X, den)
+y_pred
+y_pred = np.array(y_hc)
+y_pred[y_hc == 0] = 1
+y_pred[y_hc == 1] = 2
+y_pred[y_hc == 2] = 3
+y_pred
+
+from sklearn.metrics import confusion_matrix
+
+cm = confusion_matrix(y_set, y_pred)
+print("success ratio : ", success_ratio(cm=cm), "%")
+from sklearn.cluster import AgglomerativeClustering
+
+hc = AgglomerativeClustering(n_clusters=3, affinity='euclidean', linkage='ward')
+
+t1 = getTrace(X[y_hc == 0, 0], X[y_hc == 0, 1], X[y_hc == 0, 2], s=4, c='red', label='1')  #
+t2 = getTrace(X[y_hc == 1, 0], X[y_hc == 1, 1], X[y_hc == 1, 2], s=4, c='green', label='2')  #
+t3 = getTrace(X[y_hc == 2, 0], X[y_hc == 2, 1], X[y_hc == 2, 2], s=4, c='blue', label='3')  #
+x = X[:, 0]
+y = X[:, 1]
+z = X[:, 2]
+
+
+def showGraph(title, x_colname, x_range, y_colname, y_range, z_colname, z_range, traces):
+    layout = go.Layout(
+        title=title,
+        scene=dict(
+            xaxis=dict(title=x_colname, range=x_range),
+            yaxis=dict(title=y_colname, range=y_range),
+            zaxis=dict(title=z_colname, range=z_range)
+        )
+    )
+    fig = go.Figure(data=traces, layout=layout)
+    plotly.offline.plot(fig)
+
+
+# printing clusters in 3D using pyplot
+
+showGraph("Clustering results of the SECOND_DATASET IN 3D", "1ST_CLUSTER", [min(x), max(x)], "2ND_CLUSTER",
+          [min(y), max(y)], "3RD_CLUSTER", [min(z) - 1, max(z)], [t1, t2, t3])
